@@ -1,7 +1,53 @@
 {
   "name": "unified-logger-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "description": "Disk-first structured logger for Node.js with local ingestion to MSSQL, PostgreSQL, and MySQL",
+  "license": "MIT",
+
   "main": "src/index.js",
-  "files": ["src", "bin"],
-  "license": "MIT"
+
+  "files": [
+    "src",
+    "bin",
+    "README.md",
+    "LICENSE"
+  ],
+
+  "keywords": [
+    "logger",
+    "logging",
+    "structured-logging",
+    "disk-logging",
+    "database-logging",
+    "node-logger",
+    "postgres",
+    "mysql",
+    "mssql",
+    "enterprise-logging",
+    "backend-logging",
+    "durable-logging"
+  ],
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aritvyas/unified-logger-sdk"
+  },
+
+  "bugs": {
+    "url": "https://github.com/aritvyas/unified-logger-sdk/issues"
+  },
+
+  "homepage": "https://github.com/aritvyas/unified-logger-sdk#readme",
+
+  "engines": {
+    "node": ">=16"
+  },
+
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+
+  "private": false
 }
