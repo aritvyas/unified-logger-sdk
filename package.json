@@ -1,0 +1,7 @@
+{
+  "name": "unified-logger-sdk",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "files": ["src", "bin"],
+  "license": "MIT"
+}
