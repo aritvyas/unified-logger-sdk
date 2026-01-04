@@ -3,9 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const { spawn } = require("child_process");
 
-/**
- * Resolve platform-specific ingestor binary
- */
 function resolveBinary() {
   const platform = os.platform();
   const arch = os.arch();
@@ -18,10 +15,10 @@ function resolveBinary() {
     binName = "ingestor-win.exe";
   } else if (platform === "linux" && arch === "x64") {
     binDir = "linux-amd64";
-    binName = "ingestor-linux-amd64";
+    binName = "ingestor-linux";
   } else if (platform === "darwin" && arch === "arm64") {
     binDir = "darwin-arm64";
-    binName = "ingestor-darwin-arm64";
+    binName = "ingestor-darwin";
   } else {
     throw new Error(`Unsupported platform: ${platform} ${arch}`);
   }
@@ -35,32 +32,19 @@ function resolveBinary() {
   return binPath;
 }
 
-/**
- * Start Go ingestor as background process (Windows-safe)
- */
 function startIngestor(config) {
-  const binary = resolveBinary();
-
-  // Prepare directories
-  const logDir = config.logDir || "./logs";
-  const internalLogDir = path.join(logDir, "_internal");
-  fs.mkdirSync(internalLogDir, { recursive: true });
-
-  // Write config for ingestor
+  const bin = resolveBinary();
   const cfgPath = path.join(process.cwd(), "ingestor.config.json");
+
   fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
 
-  // Spawn ingestor (Windows-safe detached mode)
-  const proc = spawn(binary, [cfgPath], {
+  const proc = spawn(bin, [cfgPath], {
     windowsHide: true,
-    detached: true,
-    stdio: "ignore"
+    stdio: "ignore",
+    detached: true
   });
 
-  // Allow parent to exit
   proc.unref();
 }
 
-module.exports = {
-  startIngestor
-};
+module.exports = { startIngestor };
