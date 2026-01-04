@@ -7,8 +7,7 @@ function resolveBinary() {
   const platform = os.platform();
   const arch = os.arch();
 
-  let binDir;
-  let binName;
+  let binDir, binName;
 
   if (platform === "win32") {
     binDir = "win";
@@ -26,7 +25,7 @@ function resolveBinary() {
   const binPath = path.join(__dirname, "..", "bin", binDir, binName);
 
   if (!fs.existsSync(binPath)) {
-    throw new Error(`Ingestor binary not found: ${binPath}`);
+    throw new Error(`Ingestor binary not found at ${binPath}`);
   }
 
   return binPath;
@@ -34,13 +33,21 @@ function resolveBinary() {
 
 function startIngestor(config) {
   const binary = resolveBinary();
+
+  const logDir = config.logDir || "./logs";
+  const internalLogDir = path.join(logDir, "_internal");
+  fs.mkdirSync(internalLogDir, { recursive: true });
+
   const cfgPath = path.join(process.cwd(), "ingestor.config.json");
+  const logPath = path.join(internalLogDir, "ingestor.log");
 
   fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
 
+  const out = fs.openSync(logPath, "a");
+
   const proc = spawn(binary, [cfgPath], {
     detached: true,
-    stdio: "ignore"
+    stdio: ["ignore", out, out]
   });
 
   proc.unref();
