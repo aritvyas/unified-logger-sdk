@@ -1,13 +1,17 @@
 const os = require("os");
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
 const { spawn } = require("child_process");
 
+/**
+ * Resolve platform-specific ingestor binary
+ */
 function resolveBinary() {
   const platform = os.platform();
   const arch = os.arch();
 
-  let binDir, binName;
+  let binDir;
+  let binName;
 
   if (platform === "win32") {
     binDir = "win";
@@ -31,26 +35,32 @@ function resolveBinary() {
   return binPath;
 }
 
+/**
+ * Start Go ingestor as background process (Windows-safe)
+ */
 function startIngestor(config) {
   const binary = resolveBinary();
 
+  // Prepare directories
   const logDir = config.logDir || "./logs";
   const internalLogDir = path.join(logDir, "_internal");
   fs.mkdirSync(internalLogDir, { recursive: true });
 
+  // Write config for ingestor
   const cfgPath = path.join(process.cwd(), "ingestor.config.json");
-  const logPath = path.join(internalLogDir, "ingestor.log");
-
   fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
 
-  const out = fs.openSync(logPath, "a");
-
+  // Spawn ingestor (Windows-safe detached mode)
   const proc = spawn(binary, [cfgPath], {
+    windowsHide: true,
     detached: true,
-    stdio: ["ignore", out, out]
+    stdio: "ignore"
   });
 
+  // Allow parent to exit
   proc.unref();
 }
 
-module.exports = { startIngestor };
+module.exports = {
+  startIngestor
+};
