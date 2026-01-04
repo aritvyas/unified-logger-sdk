@@ -1,6 +1,6 @@
 {
   "name": "unified-logger-sdk",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Disk-first structured logger for Node.js with local ingestion to MSSQL, PostgreSQL, and MySQL",
   "license": "MIT",
   "main": "src/index.js",
