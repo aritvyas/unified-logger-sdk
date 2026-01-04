@@ -8,43 +8,51 @@ class Logger {
       throw new Error("service.name is required");
     }
 
-    this.service = service;
-    this.logDir = logging?.logDir || "./logs";
-    this.activeDir = path.join(this.logDir, "active");
-
-    fs.mkdirSync(this.activeDir, { recursive: true });
-
-    this.file = path.join(this.activeDir, `${service.name}.log`);
-  }
-
-  write(level, message, data = {}) {
-    const entry = {
-      log_id: crypto.randomUUID(),              
-      log_time: new Date().toISOString(),      
-      who_service: this.service.name,          
-      what_level: level,                        
-      what_message: message,                  
-      why_code: data.why_code || null,          
-      payload: data.payload || data || null    
+    this.service = {
+      name: service.name,
+      version: service.version || null
     };
 
-    fs.appendFileSync(this.file, JSON.stringify(entry) + "\n");
+    const baseDir = logging?.logDir || "./logs";
+    this.activeDir = path.join(baseDir, "active");
+    fs.mkdirSync(this.activeDir, { recursive: true });
+
+    // one file per process run → avoids pollution
+    const fileName = `${service.name}-${process.pid}-${Date.now()}.log`;
+    this.file = path.join(this.activeDir, fileName);
   }
 
-  info(message, payload) {
-    this.write("INFO", message, payload);
+  write(level, message, data) {
+    const entry = {
+      logId: crypto.randomUUID(),
+      timestamp: new Date().toISOString(),
+      level,
+      service: this.service,
+      message,
+      data: data ?? null
+    };
+
+    fs.appendFileSync(
+      this.file,
+      JSON.stringify(entry) + "\n",
+      { encoding: "utf8" }
+    );
   }
 
-  error(message, payload) {
-    this.write("ERROR", message, payload);
+  info(message, data) {
+    this.write("INFO", message, data);
   }
 
-  warn(message, payload) {
-    this.write("WARN", message, payload);
+  error(message, data) {
+    this.write("ERROR", message, data);
   }
 
-  debug(message, payload) {
-    this.write("DEBUG", message, payload);
+  warn(message, data) {
+    this.write("WARN", message, data);
+  }
+
+  debug(message, data) {
+    this.write("DEBUG", message, data);
   }
 }
 
