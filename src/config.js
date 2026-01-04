@@ -1,18 +1,22 @@
-function buildIngestorConfig({ logDir, db }) {
-  if (!db || !db.type || !db.connection) {
-    throw new Error("DB config missing");
+function buildIngestorConfig({ logDir, db, batch }) {
+  if (!logDir) {
+    throw new Error("logDir is required");
+  }
+
+  if (!db?.type || !db?.connection) {
+    throw new Error("db.type and db.connection are required");
   }
 
   return {
     logDir,
     db: {
-      type: db.type,
+      type: db.type,                
       connection: db.connection,
-      table: db.table || "logs"
+      table: db.table || "unified_logs"
     },
     batch: {
-      size: 200,
-      maxRetries: 3
+      size: batch?.size || 200,
+      maxRetries: batch?.maxRetries || 3
     }
   };
 }

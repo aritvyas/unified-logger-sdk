@@ -7,8 +7,7 @@ function resolveBinary() {
   const platform = os.platform();
   const arch = os.arch();
 
-  let binDir;
-  let binName;
+  let binDir, binName;
 
   if (platform === "win32") {
     binDir = "win";
@@ -23,7 +22,8 @@ function resolveBinary() {
     throw new Error(`Unsupported platform: ${platform} ${arch}`);
   }
 
-  const binPath = path.join(__dirname, "..", "bin", binDir, binName);
+  const pkgRoot = path.resolve(__dirname, "..");
+  const binPath = path.join(pkgRoot, "bin", binDir, binName);
 
   if (!fs.existsSync(binPath)) {
     throw new Error(`Ingestor binary not found at ${binPath}`);
@@ -38,9 +38,14 @@ function startIngestor(config) {
 
   fs.writeFileSync(cfgPath, JSON.stringify(config, null, 2));
 
+  const internalDir = path.join(process.cwd(), "logs", "_internal");
+  fs.mkdirSync(internalDir, { recursive: true });
+
+  const errLog = path.join(internalDir, "ingestor.err.log");
+
   const proc = spawn(bin, [cfgPath], {
     windowsHide: true,
-    stdio: "ignore",
+    stdio: ["ignore", "ignore", fs.openSync(errLog, "a")],
     detached: true
   });
 
