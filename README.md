@@ -1,3 +1,4 @@
+<meta name="google-site-verification" content="C86Mnz-6Zi1x7C-In1JWcOikTMb3-y8XqQWY0Mg6yXc" />
 # Unified Logger SDK – Disk-First MSSQL Logger for Node.js
 
 > 📦 npm package: https://www.npmjs.com/package/unified-logger-sdk
