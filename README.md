@@ -1,4 +1,6 @@
-Unified Logger SDK
+# Unified Logger SDK – Disk-First MSSQL Logger for Node.js
+
+> 📦 npm package: https://www.npmjs.com/package/unified-logger-sdk
 
 Unified Logger SDK is a durable, disk-first logging system for backend services that require reliable log persistence, structured logging, and database-backed querying without introducing centralized logging infrastructure or vendor lock-in.
 
